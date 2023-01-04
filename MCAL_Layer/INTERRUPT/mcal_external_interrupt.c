@@ -7,7 +7,7 @@
 
 #include "mcal_external_interrupt.h"
 
-static Std_ReturnType Enable_karemm(void);
+static Std_ReturnType Enable_ka(void);
 
 Std_ReturnType Interrupt_INTx_Enable(const interrupt_INTx_t *object){
     Std_ReturnType ret_value=E_NOT_OK;
@@ -16,7 +16,7 @@ Std_ReturnType Interrupt_INTx_Enable(const interrupt_INTx_t *object){
         }
     else
     {
-        Enable_karemm();
+        Enable_ka();
         
     }
     return ret_value;
