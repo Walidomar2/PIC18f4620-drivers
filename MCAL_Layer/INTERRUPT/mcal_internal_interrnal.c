@@ -1,5 +1,5 @@
 /* 
- * File:   mcal_internal_interrupt.h
+ * File:   mcal_internal_interrupt.c
  * Author: Walid Omar
  *
  * Created on December 31, 2022, 9:23 PM

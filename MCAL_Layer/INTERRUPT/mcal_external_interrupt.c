@@ -1,5 +1,5 @@
 /* 
- * File:   mcal_external_interrupt.h
+ * File:   mcal_external_interrupt.c
  * Author: Walid Omar
  *
  * Created on December 31, 2022, 9:23 PM
