@@ -7,6 +7,8 @@
 
 #include "mcal_external_interrupt.h"
 
+void wa(void);
+
 Std_ReturnType Interrupt_INTx_Enable(const interrupt_INTx_t *object){
     Std_ReturnType ret_value=E_NOT_OK;
     if(NULL == object){
@@ -14,6 +16,7 @@ Std_ReturnType Interrupt_INTx_Enable(const interrupt_INTx_t *object){
         }
     else
     {
+        wa();
         
     }
     return ret_value;
