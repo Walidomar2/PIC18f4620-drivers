@@ -34,8 +34,12 @@ Std_ReturnType Interrupt_INTx_Enable(const interrupt_INTx_t *object){
                     EXT_INTERRUPT_INT0_CLEAR_FLAG(); 
                     Edge_Config(object);
                     INT0_SetInterruptHandler(object->EXT_InterruptHandler);
+                    #if INTERRUPT_FEATURE==INTERRUPT_PRIORITY_ENABLE
+                    GLOBAL_INTE_HIGH_ENABLE();
+                    #else
                     GLOBAL_INTERRUPT_ENABLE();
                     PERIPHERAL_INTERRUPT_ENABLE();
+                    #endif
                     EXT_INTERRUPT_INT0_ENABLE();
                     ret_value = E_OK;
                     break;
@@ -177,16 +181,33 @@ static Std_ReturnType INTx_Priority_Config(const interrupt_INTx_t *object){
     }
     else
     { 
+        INTERRUPT_PRIORITY_ENABLE();
         switch(object->INTx_pin.Pin){
                 case PIN1:
-                   if(object->priority == LOW_PRIORITY)       { EXT_INTERRUPT_INT1_LOW_PRIORITY(); }     
-                   else if(object->priority == HIGH_PRIORITY) { EXT_INTERRUPT_INT1_HIGH_PRIORITY();}
+                   if(object->priority == LOW_PRIORITY)
+                   { 
+                       EXT_INTERRUPT_INT1_LOW_PRIORITY();
+                       GLOBAL_INTE_LOW_ENABLE();
+                   }     
+                   else if(object->priority == HIGH_PRIORITY)
+                   {
+                       EXT_INTERRUPT_INT1_HIGH_PRIORITY();
+                       GLOBAL_INTE_HIGH_ENABLE();  
+                   }
                    else{ /* Nothing */}     
                     ret_value = E_OK;
                     break;
                 case PIN2:
-                    if(object->priority == LOW_PRIORITY)      {  EXT_INTERRUPT_INT2_LOW_PRIORITY(); }      
-                    else if(object->priority == HIGH_PRIORITY){  EXT_INTERRUPT_INT2_HIGH_PRIORITY();}
+                    if(object->priority == LOW_PRIORITY) 
+                    {  
+                        EXT_INTERRUPT_INT2_LOW_PRIORITY();
+                        GLOBAL_INTE_LOW_ENABLE();
+                    }      
+                    else if(object->priority == HIGH_PRIORITY)
+                    { 
+                        EXT_INTERRUPT_INT2_HIGH_PRIORITY();
+                        GLOBAL_INTE_HIGH_ENABLE();
+                    }
                     else{ /*Nothing*/ }    
                     ret_value = E_OK;
                     break;
