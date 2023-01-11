@@ -15,6 +15,11 @@
 void INT0_ISR(void);
 void INT1_ISR(void);
 void INT2_ISR(void);
+void RB4_ISR(uint8 logic);
+void RB5_ISR(uint8 logic);
+void RB6_ISR(uint8 logic);
+void RB7_ISR(uint8 logic);
+
 
 
 

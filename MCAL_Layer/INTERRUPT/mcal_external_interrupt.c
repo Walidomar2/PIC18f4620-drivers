@@ -6,6 +6,7 @@
  */
 
 #include "mcal_external_interrupt.h"
+#include "mcal_interrupt_manager.h"
 static Std_ReturnType INTx_Priority_Config(const interrupt_INTx_t *object);
 static Std_ReturnType Edge_Config(const interrupt_INTx_t *object);
 static Std_ReturnType RBx_Priority_Config(const interrupt_RBx_t *object);
@@ -17,6 +18,18 @@ static void(*INT2_InterruptHandler)(void) = NULL; // will store the address of t
 static Std_ReturnType INT0_SetInterruptHandler(void(*InterruptHandler)(void)); // will set the address of the INT0 ISR in application to INT0_InterruptHandler
 static Std_ReturnType INT1_SetInterruptHandler(void(*InterruptHandler)(void)); // will set the address of the INT1 ISR in application to INT0_InterruptHandler
 static Std_ReturnType INT2_SetInterruptHandler(void(*InterruptHandler)(void)); // will set the address of the INT2 ISR in application to INT0_InterruptHandler
+
+static void(*RB4_InterruptHandlerHigh)(void) = NULL; // will store the address of the RB4_HIGH VOLTAGE ISR in application layer 
+static void(*RB4_InterruptHandlerLow)(void)  = NULL; // will store the address of the RB4_LOW VOLTAGE ISR in application layer 
+
+static void(*RB5_InterruptHandlerHigh)(void) = NULL; // will store the address of the RB5_HIGH_VOLTAGE ISR in application layer 
+static void(*RB5_InterruptHandlerLow)(void)  = NULL; // will store the address of the RB5_LOW_VOLTAGE ISR in application layer 
+
+static void(*RB6_InterruptHandlerHigh)(void) = NULL; // will store the address of the RB6_HIGH_VOLTAGE ISR in application layer 
+static void(*RB6_InterruptHandlerLow)(void)  = NULL; // will store the address of the RB6_LOW_VOLTAGE ISR in application layer 
+
+static void(*RB7_InterruptHandlerHigh)(void) = NULL; // will store the address of the RB7_HIGH_VOLTAGE ISR in application layer 
+static void(*RB7_InterruptHandlerLow)(void)  = NULL; // will store the address of the RB7_LOW_VOLTAGE ISR in application layer 
 
 
 Std_ReturnType Interrupt_INTx_Enable(const interrupt_INTx_t *object){
@@ -116,9 +129,32 @@ Std_ReturnType Interrupt_RBx_Enable(const interrupt_RBx_t *object){
         EXT_INTERRUPT_RBx_CLEAR_FLAG();
         #if INTERRUPT_FEATURE==INTERRUPT_PRIORITY_ENABLE
         RBx_Priority_Config(object);
+        #else
+        GLOBAL_INTERRUPT_ENABLE();
+        PERIPHERAL_INTERRUPT_ENABLE();
         #endif
+        switch(object->RBx_pin.Pin){
+                case PIN4:
+                    RB4_InterruptHandlerHigh = object->EXT_InterruptHandlerHigh;
+                    RB4_InterruptHandlerLow  = object->EXT_InterruptHandlerLow;
+                    break;
+                case PIN5:
+                    RB5_InterruptHandlerHigh = object->EXT_InterruptHandlerHigh;
+                    RB5_InterruptHandlerLow  = object->EXT_InterruptHandlerLow;
+                    break;
+                case PIN6:
+                    RB6_InterruptHandlerHigh = object->EXT_InterruptHandlerHigh;
+                    RB6_InterruptHandlerLow  = object->EXT_InterruptHandlerLow;
+                    break;
+                case PIN7:
+                    RB7_InterruptHandlerHigh = object->EXT_InterruptHandlerHigh;
+                    RB7_InterruptHandlerLow  = object->EXT_InterruptHandlerLow;
+                    break;
+                default:
+                    ret_value=E_NOT_OK;
+        }    
+        
         EXT_INTERRUPT_RBx_ENABLE();
-        ret_value=E_OK;
     }
     return ret_value; 
 }
@@ -220,6 +256,7 @@ static Std_ReturnType INTx_Priority_Config(const interrupt_INTx_t *object){
 
 static Std_ReturnType RBx_Priority_Config(const interrupt_RBx_t *object)
 {
+    INTERRUPT_PRIORITY_ENABLE();
     Std_ReturnType ret_value=E_NOT_OK;
     if(NULL == object)
     {
@@ -227,8 +264,14 @@ static Std_ReturnType RBx_Priority_Config(const interrupt_RBx_t *object)
     }
     else
     {
-        if(HIGH_PRIORITY == object->priority)      { EXT_INTERRUPT_RBx_HIGH_PRIORITY(); }
-        else if(LOW_PRIORITY == object->priority)  { EXT_INTERRUPT_RBx_LOW_PRIORITY();  }
+        if(HIGH_PRIORITY == object->priority){ 
+            EXT_INTERRUPT_RBx_HIGH_PRIORITY();
+            GLOBAL_INTE_HIGH_ENABLE();
+        }
+        else if(LOW_PRIORITY == object->priority){ 
+            EXT_INTERRUPT_RBx_LOW_PRIORITY();
+            GLOBAL_INTE_LOW_ENABLE();
+        }
         else{ /*Nothing*/ }
          ret_value=E_OK;  
     }
@@ -301,3 +344,74 @@ void INT2_ISR(void){
     }
 }
 
+void RB4_ISR(uint8 logic){
+    EXT_INTERRUPT_RBx_CLEAR_FLAG();
+   if(1 == logic){
+    if(RB4_InterruptHandlerHigh)
+    {
+        RB4_InterruptHandlerHigh();
+    }
+  }
+   else if(0 == logic)
+   {
+      if(RB4_InterruptHandlerLow)
+    {
+        RB4_InterruptHandlerLow();
+    } 
+   }
+   else{ /*Nothing*/ }
+}
+
+void RB5_ISR(uint8 logic){
+    EXT_INTERRUPT_RBx_CLEAR_FLAG();
+   if(1 == logic){
+    if(RB5_InterruptHandlerHigh)
+    {
+        RB5_InterruptHandlerHigh();
+    }
+  }
+   else if(0 == logic)
+   {
+      if(RB5_InterruptHandlerLow)
+    {
+        RB5_InterruptHandlerLow();
+    } 
+   }
+   else{ /*Nothing*/ }
+}
+
+void RB6_ISR(uint8 logic){
+    EXT_INTERRUPT_RBx_CLEAR_FLAG();
+    if(1 == logic){
+    if(RB6_InterruptHandlerHigh)
+    {
+        RB6_InterruptHandlerHigh();
+    }
+  }
+   else if(0 == logic)
+   {
+      if(RB6_InterruptHandlerLow)
+    {
+        RB6_InterruptHandlerLow();
+    } 
+   }
+   else{ /*Nothing*/ }
+}
+
+void RB7_ISR(uint8 logic){
+    EXT_INTERRUPT_RBx_CLEAR_FLAG();
+    if(1 == logic){
+    if(RB7_InterruptHandlerHigh)
+    {
+        RB7_InterruptHandlerHigh();
+    }
+  }
+   else if(0 == logic)
+   {
+      if(RB7_InterruptHandlerLow)
+    {
+        RB7_InterruptHandlerLow();
+    } 
+   }
+   else{ /*Nothing*/ }
+}

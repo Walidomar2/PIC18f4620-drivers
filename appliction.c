@@ -6,45 +6,42 @@
  */
 
 #include "application.h"
-void INT1_APP_ISR(void);
-void INT2_APP_ISR(void);
+void RB4_HIGH_APP_ISR(void);
+void RB4_LOW_APP_ISR(void);
+void RB5_HIGH_APP_ISR(void);
+void RB5_LOW_APP_ISR(void);
 
-interrupt_INTx_t Interrupt_INT1 = {
-    .EXT_InterruptHandler = INT1_APP_ISR ,
-    .edge = INTERRUPT_RISING_EDGE ,
-    .priority = LOW_PRIORITY,
-    .INTx_pin.Port = PORTB_INDEX ,
-    .INTx_pin.Pin = PIN1,
-    .INTx_pin.Direction = INPUT ,
-    .INTx_pin.Logic = LOW 
-};
-
-interrupt_INTx_t Interrupt_INT2 = {
-    .EXT_InterruptHandler = INT2_APP_ISR ,
-    .edge = INTERRUPT_RISING_EDGE ,
+interrupt_RBx_t Interrupt_RB4 ={
+    .EXT_InterruptHandlerHigh = RB4_HIGH_APP_ISR,
+    .EXT_InterruptHandlerLow = RB4_LOW_APP_ISR ,
     .priority = HIGH_PRIORITY,
-    .INTx_pin.Port = PORTB_INDEX ,
-    .INTx_pin.Pin = PIN2,
-    .INTx_pin.Direction = INPUT ,
-    .INTx_pin.Logic = LOW 
+    .RBx_pin.Port = PORTB_INDEX,
+    .RBx_pin.Pin = PIN4,
+    .RBx_pin.Direction = INPUT,
+    .RBx_pin.Logic = LOW
 };
+
+interrupt_RBx_t Interrupt_RB5 ={
+    .EXT_InterruptHandlerHigh = RB5_HIGH_APP_ISR,
+    .EXT_InterruptHandlerLow = RB5_LOW_APP_ISR ,
+    .priority = HIGH_PRIORITY,
+    .RBx_pin.Port = PORTB_INDEX,
+    .RBx_pin.Pin = PIN5,
+    .RBx_pin.Direction = INPUT,
+    .RBx_pin.Logic = LOW
+};
+
 
 int main(){
     modules_init();
-    Interrupt_INTx_Enable(&Interrupt_INT1);
-    Interrupt_INTx_Enable(&Interrupt_INT2);
+    Interrupt_RBx_Enable(&(Interrupt_RB4 ));
     while(1){
         
     }
     return (EXIT_SUCCESS);
 }
-void INT2_APP_ISR(void)
-{
-    led_toggle(&led_2);
-  
-}
 
-void INT1_APP_ISR(void){
-    led_toggle(&led_1);
-    
-}
+void RB4_HIGH_APP_ISR(void){}
+void RB4_LOW_APP_ISR(void){}
+void RB5_HIGH_APP_ISR(void){}
+void RB5_LOW_APP_ISR(void){}

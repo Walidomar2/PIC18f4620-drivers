@@ -20,6 +20,9 @@
 
 extern led_config_t led_1;
 extern led_config_t led_2;
+extern led_config_t led_3;
+extern led_config_t led_4;
+
 void modules_init(void);
 
 
