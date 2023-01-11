@@ -18,6 +18,8 @@
 #include "KEYPAD/ecu_keypad.h"
 #include "LCD/ecu_lcd.h"
 
+extern led_config_t led_1;
+void modules_init(void);
 
 
 #endif	/* ECU_DEVICES_INIT_H */

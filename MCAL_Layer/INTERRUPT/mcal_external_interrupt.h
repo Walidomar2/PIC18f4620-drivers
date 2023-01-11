@@ -60,13 +60,13 @@ typedef struct {
     void (* EXT_InterruptHandler)(void);    // Call back function to notify through layers 
     Pin_Config_t    INTx_pin;
     interrupt_edge  edge;
-    interrupt_periority periority;
+    interrupt_priority priority;
 }interrupt_INTx_t;
 
 typedef struct {
     void (* EXT_InterruptHandler)(void); 
     Pin_Config_t    RBx_pin;
-    interrupt_periority periority;
+    interrupt_priority priority;
 }interrupt_RBx_t;
 
 /* Functions Declarations */
