@@ -6,42 +6,17 @@
  */
 
 #include "application.h"
-void RB4_HIGH_APP_ISR(void);
-void RB4_LOW_APP_ISR(void);
-void RB5_HIGH_APP_ISR(void);
-void RB5_LOW_APP_ISR(void);
-
-interrupt_RBx_t Interrupt_RB4 ={
-    .EXT_InterruptHandlerHigh = RB4_HIGH_APP_ISR,
-    .EXT_InterruptHandlerLow = RB4_LOW_APP_ISR ,
-    .priority = HIGH_PRIORITY,
-    .RBx_pin.Port = PORTB_INDEX,
-    .RBx_pin.Pin = PIN4,
-    .RBx_pin.Direction = INPUT,
-    .RBx_pin.Logic = LOW
-};
-
-interrupt_RBx_t Interrupt_RB5 ={
-    .EXT_InterruptHandlerHigh = RB5_HIGH_APP_ISR,
-    .EXT_InterruptHandlerLow = RB5_LOW_APP_ISR ,
-    .priority = HIGH_PRIORITY,
-    .RBx_pin.Port = PORTB_INDEX,
-    .RBx_pin.Pin = PIN5,
-    .RBx_pin.Direction = INPUT,
-    .RBx_pin.Logic = LOW
-};
-
+Std_ReturnType ret = E_NOT_OK;
+uint16 ret_data = 0;
 
 int main(){
     modules_init();
-    Interrupt_RBx_Enable(&(Interrupt_RB4 ));
+    ret = EEPROM_WriteData(0x3FF,6);
+    ret = EEPROM_ReadData(0x3FF,&ret_data);
     while(1){
         
     }
     return (EXIT_SUCCESS);
 }
 
-void RB4_HIGH_APP_ISR(void){}
-void RB4_LOW_APP_ISR(void){}
-void RB5_HIGH_APP_ISR(void){}
-void RB5_LOW_APP_ISR(void){}
+
