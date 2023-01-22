@@ -11,6 +11,7 @@
 #include "ECU_Layer/ecu_devices_init.h"
 #include "MCAL_Layer/INTERRUPT/mcal_external_interrupt.h"
 #include "MCAL_Layer/EEPROM/EEPROM.h"
+#include "MCAL_Layer/ADC/ADC.h"
 
 #endif	/* APPLICATION_H */
 
