@@ -25,6 +25,10 @@ Std_ReturnType ADC_Init(const adc_config_t *object){
         Pin_Config(object);
         Volt_Reference_Config(object);
         Result_Format_Config(object);
+/*#if ADC_INTERRUPT_FEATURE  == INTERRUPT_FEATURE_ENABLE
+        interrupt_ADC_t _adc_interrupt ={.ADC_ExceptionHandler = object->ADC_InterruptHandler ,.periority = object->priority};
+        Interrupt_ADC_Enable(&_adc_interrupt); 
+#endif*/
         ADC_ENABLE();
         ret_value = E_OK;
     }
@@ -40,6 +44,9 @@ Std_ReturnType ADC_Deinit(const adc_config_t *object){
     else
     {
         ADC_DISABLE();
+/*#if ADC_INTERRUPT_FEATURE  == INTERRUPT_FEATURE_ENABLE
+        ADC_INTERRUPT_DISABLE();
+#endif*/
         ret_value=E_OK;
     }
     return ret_value;
@@ -81,8 +88,8 @@ Std_ReturnType ADC_ResultRead(const adc_config_t *object, uint16 *result){
     }
     else
     {
-        ret_value = ADC_StartConversion(object);
-        while(ADC_CONVERTION_STATUS());         //WAIT TILL CONVERSION IS DONE
+        ADC_StartConversion(object);
+        while(ADC_CONVERTION_STATUS());
         if( ADC_RIGHT_RESULT == object->res_format)
         {
             *result = (uint16)((ADRESH << 8) + ADRESL);
@@ -101,7 +108,6 @@ Std_ReturnType ADC_ResultRead(const adc_config_t *object, uint16 *result){
     }
     return ret_value;
 }
-
 Std_ReturnType ADC_ChangeChannel(adc_config_t *object , ADC_channel_select new_channel){
     Std_ReturnType ret_value = E_NOT_OK;
     if(NULL == object)

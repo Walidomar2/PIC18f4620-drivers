@@ -9,22 +9,9 @@
 
 #if INTERRUPT_FEATURE == INTERRUPT_PRIORITY_ENABLE
 void __interrupt()InterruptManagerHigh(void){
-    if((INTERRUPT_ENABLE == INTCONbits.RBIE )&&(INTERRUPT_OCCUR == INTCONbits.RBIF) && (HIGH==PORTBbits.RB4))
+    if((INTERRUPT_ENABLE == PIE1bits.ADIE )&&(INTERRUPT_OCCUR == PIR1bits.ADIF))
     {
-        RB4_ISR(1);
-    }
-    else if((INTERRUPT_ENABLE == INTCONbits.RBIE )&&(INTERRUPT_OCCUR == INTCONbits.RBIF) && (LOW==PORTBbits.RB4))
-    {
-        RB4_ISR(0);
-    }
-    else{ /*Nothing*/ }
-    if((INTERRUPT_ENABLE == INTCONbits.RBIE )&&(INTERRUPT_OCCUR == INTCONbits.RBIF) && (HIGH==PORTBbits.RB5))
-    {
-        RB5_ISR(1);
-    }
-    else if((INTERRUPT_ENABLE == INTCONbits.RBIE )&&(INTERRUPT_OCCUR == INTCONbits.RBIF) && (LOW==PORTBbits.RB5))
-    {
-        RB5_ISR(0);
+        ADC_ISR();
     }
     else{ /*Nothing*/ }
 }

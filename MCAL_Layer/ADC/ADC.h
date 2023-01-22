@@ -33,7 +33,7 @@
 /* Macro Functions Declarations */
 #define ADC_ENABLE()            (ADCON0bits.ADON = 1 )
 #define ADC_DISABLE()           (ADCON0bits.ADON = 0 )
-#define ADC_CONVERTION_START()    (ADCON0bits.GODONE = 1)
+#define ADC_CONVERTION_START()  (ADCON0bits.GODONE = 1)
 #define ADC_CONVERTION_STATUS()  (ADCON0bits.GODONE)
 
 #define ADC_ANALOG_DIGITAL_PORT_CONFIG(_config)         (ADCON1bits.PCFG = _config) //SELECTED HOW MANY ANALOG PINS YOU NEED
@@ -102,7 +102,10 @@ typedef enum{
 }ADC_result_format;
 
 typedef struct{
+#if ADC_INTERRUPT_FEATURE  == INTERRUPT_FEATURE_ENABLE
     void(*ADC_InterruptHandler)(void);
+    interrupt_priority  priority;
+#endif
     ADC_channel_select            channel;
     ADC_acquisition_time_select   acqu_time;
     ADC_clock_select              clk_select;
@@ -116,9 +119,11 @@ typedef struct{
 Std_ReturnType ADC_Init(const adc_config_t *object);
 Std_ReturnType ADC_Deinit(const adc_config_t *object);
 Std_ReturnType ADC_StartConversion(const adc_config_t *object);
+Std_ReturnType ADC_GetConversion(const adc_config_t *object);
 Std_ReturnType ADC_ConversionStatus(const adc_config_t *object, uint8 *status);
 Std_ReturnType ADC_ResultRead(const adc_config_t *object, uint16 *result);
 Std_ReturnType ADC_ChangeChannel( adc_config_t *object , ADC_channel_select new_channel);
+
 
 
 
