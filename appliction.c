@@ -7,21 +7,33 @@
 
 #include "application.h"
 Std_ReturnType ret = E_NOT_OK;
-uint16 adc_1_res = 0;
-adc_config_t adc_1 =
-{
-    .channel = ADC_CHANNEL_AN0,
-    .acqu_time = ADC_12_TAD,
-    .clk_select = ADC_FOSC_DIV_16 ,
-    .res_format = ADC_RIGHT_RESULT ,
-    .volt_sou_sel = ADC_VOLTAGE_REFERENCE_DISABLE 
+volatile uint8 counter = 0;
+
+void Timer0_Interrupt_ISR(void){
+    counter ++ ;
+    led_toggle(&led_1);
+    if(counter == 2)
+    {
+        counter = 0;
+        led_toggle(&led_2);
+    }
+    
+}
+timer0_t timer0 = {
+    .timer0_ExceptionHandler = Timer0_Interrupt_ISR ,
+    .preload_value = 55536,
+    .priority = HIGH_PRIORITY ,
+    .mode =  TIMER0_TIMER_MODE ,
+    .prescaler = TIMER0_PRESCALER_DIV_BY_4 ,
+    .prescaler_featuer = FEATURE_DISABLE,
+    .register_size = TIMER0_16BIT_REG
 };
 
+
 int main(){
-  //  modules_init();
-    ADC_Init(&adc_1);
+    modules_init();
+    Timer0_Init(&timer0);
     while(1){
-        ADC_ResultRead(&adc_1,&adc_1_res);  
     }
     return (EXIT_SUCCESS);
 }

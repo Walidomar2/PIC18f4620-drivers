@@ -9,11 +9,12 @@
 
 #if INTERRUPT_FEATURE == INTERRUPT_PRIORITY_ENABLE
 void __interrupt()InterruptManagerHigh(void){
-    if((INTERRUPT_ENABLE == PIE1bits.ADIE )&&(INTERRUPT_OCCUR == PIR1bits.ADIF))
+    if((INTERRUPT_ENABLE == INTCONbits.TMR0IE )&&(INTERRUPT_OCCUR == INTCONbits.TMR0IF))
     {
-        ADC_ISR();
+        TMR0_ISR();
     }
     else{ /*Nothing*/ }
+    
 }
 
 void __interrupt(low_priority) InterruptManagerLow(void){
