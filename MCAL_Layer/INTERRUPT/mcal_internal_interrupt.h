@@ -168,6 +168,7 @@ typedef struct {
 typedef struct {
     void(*TMR1_ExceptionHandler)(void);
     interrupt_priority  periority;  
+    uint16 preload_value;
 }interrupt_TMR1_t;
 
 typedef struct {

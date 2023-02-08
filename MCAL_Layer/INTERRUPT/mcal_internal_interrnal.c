@@ -18,7 +18,8 @@ static void(*I2C_BC_InterruptHandler)(void) = NULL;
 static void(*SPI_InterruptHandler)(void) = NULL;
 static void(*CCP1_InterruptHandler)(void) = NULL;
 static void(*CCP2_InterruptHandler)(void) = NULL;
-static uint16 TMR0_preload_value = 0;
+static volatile uint16 TMR0_preload_value = 0;
+static volatile uint16 TMR1_preload_value = 0;
 /*----------------------------------------------- ADC FUNCTIONS -------------------------------------------------------*/
 Std_ReturnType Interrupt_ADC_Enable(const interrupt_ADC_t *object){
     Std_ReturnType ret_value =E_NOT_OK;
@@ -141,6 +142,7 @@ Std_ReturnType Interrupt_TMR1_Enable(const interrupt_TMR1_t *object){
         PERIPHERAL_INTERRUPT_ENABLE();
 #endif
         TMR1_InterruptHandler = object->TMR1_ExceptionHandler;
+        TMR1_preload_value = object->preload_value;
         TMR1_INTERRUPT_ENABLE();
         ret_value=E_OK;
     }
@@ -557,6 +559,8 @@ void TMR0_ISR(void){
 void TMR1_ISR(void)
 {
     TMR1_INTERRUPT_CLEAR_FLAG();
+    TMR1H = (TMR1_preload_value ) >> 8;
+    TMR1L = (uint8)(TMR1_preload_value) ;
     if(TMR1_InterruptHandler)
     {
         TMR1_InterruptHandler();

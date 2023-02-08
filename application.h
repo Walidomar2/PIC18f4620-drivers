@@ -13,6 +13,7 @@
 #include "MCAL_Layer/EEPROM/EEPROM.h"
 #include "MCAL_Layer/ADC/ADC.h"
 #include "MCAL_Layer/Timer0/timer0.h"
+#include "MCAL_Layer/Timer1/timer1.h"
 
 #endif	/* APPLICATION_H */
 

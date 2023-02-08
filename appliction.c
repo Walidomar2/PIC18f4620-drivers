@@ -6,34 +6,30 @@
  */
 
 #include "application.h"
+
 Std_ReturnType ret = E_NOT_OK;
 volatile uint8 counter = 0;
-
-void Timer0_Interrupt_ISR(void){
-    counter ++ ;
-    led_toggle(&led_1);
-    if(counter == 2)
-    {
-        counter = 0;
-        led_toggle(&led_2);
-    }
-    
+void Timer1_Interrupt_ISR(void){
+    led_turn_on(&led_1);
+    counter++;
 }
-timer0_t timer0 = {
-    .timer0_ExceptionHandler = Timer0_Interrupt_ISR ,
-    .preload_value = 55536,
-    .priority = HIGH_PRIORITY ,
-    .mode =  TIMER0_TIMER_MODE ,
-    .prescaler = TIMER0_PRESCALER_DIV_BY_4 ,
-    .prescaler_featuer = FEATURE_DISABLE,
-    .register_size = TIMER0_16BIT_REG
-};
 
+timer1_t timer1_obj={
+    .timer1_ExceptionHandler = Timer1_Interrupt_ISR,
+    .prescaler = TIMER1_PRESCALER_DIV_BY_8,
+    .mode = TIMER1_TIMER_MODE,
+    .format = TIMER1_8BIT_REG,
+    .preload_value = 3036,
+    .priority = HIGH_PRIORITY,
+    .ext_osc_config = TIMER1_EXT_OSC_DISABLE
+};
 
 int main(){
     modules_init();
-    Timer0_Init(&timer0);
+    Timer1_Init( &timer1_obj );
+
     while(1){
+        
     }
     return (EXIT_SUCCESS);
 }
