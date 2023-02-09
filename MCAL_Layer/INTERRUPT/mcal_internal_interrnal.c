@@ -8,9 +8,6 @@
 #include "mcal_internal_interrupt.h"
 static void(*ADC_InterruptHandler)(void) = NULL;
 static void(*TMR0_InterruptHandler)(void) = NULL;
-static void(*TMR1_InterruptHandler)(void) = NULL;
-static void(*TMR2_InterruptHandler)(void) = NULL;
-static void(*TMR3_InterruptHandler)(void) = NULL;
 static void(*EUSART_TX_InterruptHandler)(void) = NULL;
 static void(*EUSART_RX_InterruptHandler)(void) = NULL;
 static void(*I2C_InterruptHandler)(void) = NULL;
@@ -19,7 +16,7 @@ static void(*SPI_InterruptHandler)(void) = NULL;
 static void(*CCP1_InterruptHandler)(void) = NULL;
 static void(*CCP2_InterruptHandler)(void) = NULL;
 static volatile uint16 TMR0_preload_value = 0;
-static volatile uint16 TMR1_preload_value = 0;
+
 /*----------------------------------------------- ADC FUNCTIONS -------------------------------------------------------*/
 Std_ReturnType Interrupt_ADC_Enable(const interrupt_ADC_t *object){
     Std_ReturnType ret_value =E_NOT_OK;
@@ -115,144 +112,6 @@ Std_ReturnType Interrupt_TMR0_Disable(const interrupt_TMR0_t *object){
     return ret_value;
 }
 
-/*----------------------------------------------- TMR1 FUNCTIONS -------------------------------------------------------*/
-Std_ReturnType Interrupt_TMR1_Enable(const interrupt_TMR1_t *object){
-      Std_ReturnType ret_value =E_NOT_OK;
-    if(NULL == object)
-    {
-        ret_value =E_NOT_OK;
-    }
-    else
-    {
-        TMR1_INTERRUPT_DISABLE();
-#if INTERRUPT_FEATURE == INTERRUPT_PRIORITY_ENABLE
-        if(HIGH_PRIORITY == object->periority)
-        {
-            GLOBAL_INTE_HIGH_ENABLE();  
-            TMR1_INTERRUPT_HIGH_PRIORITY();
-        }
-        else if(LOW_PRIORITY == object->periority)
-        {
-            GLOBAL_INTE_LOW_ENABLE();
-            TMR1_INTERRUPT_LOW_PRIORITY();
-        }
-        else{/* Nothing */}
-#else
-        GLOBAL_INTERRUPT_ENABLE();
-        PERIPHERAL_INTERRUPT_ENABLE();
-#endif
-        TMR1_InterruptHandler = object->TMR1_ExceptionHandler;
-        TMR1_preload_value = object->preload_value;
-        TMR1_INTERRUPT_ENABLE();
-        ret_value=E_OK;
-    }
-      return ret_value;
-}
-Std_ReturnType Interrupt_TMR1_Disable(const interrupt_TMR1_t *object){
-      Std_ReturnType ret_value =E_NOT_OK;
-    if(NULL == object)
-    {
-        ret_value =E_NOT_OK;
-    }
-    else
-    {
-        TMR1_INTERRUPT_DISABLE();
-        ret_value=E_OK;
-    }
-    return ret_value;
-}
-
-/*----------------------------------------------- TMR2 FUNCTIONS -------------------------------------------------------*/
-Std_ReturnType Interrupt_TMR2_Enable(const interrupt_TMR2_t *object){
-      Std_ReturnType ret_value =E_NOT_OK;
-    if(NULL == object)
-    {
-        ret_value =E_NOT_OK;
-    }
-    else
-    {
-        TMR2_INTERRUPT_DISABLE();
-#if INTERRUPT_FEATURE == INTERRUPT_PRIORITY_ENABLE
-        if(HIGH_PRIORITY == object->periority)
-        {
-            GLOBAL_INTE_HIGH_ENABLE();  
-            TMR2_INTERRUPT_HIGH_PRIORITY();
-        }
-        else if(LOW_PRIORITY == object->periority)
-        {
-            GLOBAL_INTE_LOW_ENABLE();
-            TMR2_INTERRUPT_LOW_PRIORITY();
-        }
-        else{/* Nothing */}
-#else
-        GLOBAL_INTERRUPT_ENABLE();
-        PERIPHERAL_INTERRUPT_ENABLE();
-#endif
-        TMR2_InterruptHandler = object->TMR2_ExceptionHandler;
-        TMR2_INTERRUPT_ENABLE();
-        ret_value=E_OK;
-    }
-    return ret_value;
-}
-Std_ReturnType Interrupt_TMR2_Disable(const interrupt_TMR2_t *object){
-      Std_ReturnType ret_value =E_NOT_OK;
-    if(NULL == object)
-    {
-        ret_value =E_NOT_OK;
-    }
-    else
-    {
-        TMR2_INTERRUPT_DISABLE();
-        ret_value =E_OK;
-    }
-    return ret_value;
-}
-
-/*----------------------------------------------- TMR3 FUNCTIONS -------------------------------------------------------*/
-Std_ReturnType Interrupt_TMR3_Enable(const interrupt_TMR3_t *object){
-      Std_ReturnType ret_value =E_NOT_OK;
-    if(NULL == object)
-    {
-        ret_value =E_NOT_OK;
-    }
-    else
-    {
-        TMR3_INTERRUPT_DISABLE();
-#if INTERRUPT_FEATURE == INTERRUPT_PRIORITY_ENABLE
-        if(HIGH_PRIORITY == object->periority)
-        {
-            GLOBAL_INTE_HIGH_ENABLE();  
-            TMR3_INTERRUPT_HIGH_PRIORITY();
-        }
-        else if(LOW_PRIORITY == object->periority)
-        {
-            GLOBAL_INTE_LOW_ENABLE();
-            TMR3_INTERRUPT_LOW_PRIORITY();
-        }
-        else{/* Nothing */}
-#else
-        GLOBAL_INTERRUPT_ENABLE();
-        PERIPHERAL_INTERRUPT_ENABLE();
-#endif
-        TMR3_InterruptHandler = object->TMR3_ExceptionHandler;
-        TMR3_INTERRUPT_ENABLE();
-        ret_value=E_OK;
-    }
-    return ret_value;
-}
-Std_ReturnType Interrupt_TMR3_Disable(const interrupt_TMR3_t *object){
-      Std_ReturnType ret_value =E_NOT_OK;
-    if(NULL == object)
-    {
-        ret_value =E_NOT_OK;
-    }
-    else
-    {
-        TMR3_INTERRUPT_DISABLE();
-        ret_value = E_OK;
-    }
-    return ret_value;
-}
 
 /*----------------------------------------------- EUSART_TX FUNCTIONS ---------------------------------------------------*/
 Std_ReturnType Interrupt_EUSART_TX_Enable(const interrupt_EUSART_TX_t *object){
@@ -553,35 +412,6 @@ void TMR0_ISR(void){
     if(TMR0_InterruptHandler)
     {
         TMR0_InterruptHandler();
-    }
-}
-
-void TMR1_ISR(void)
-{
-    TMR1_INTERRUPT_CLEAR_FLAG();
-    TMR1H = (TMR1_preload_value ) >> 8;
-    TMR1L = (uint8)(TMR1_preload_value) ;
-    if(TMR1_InterruptHandler)
-    {
-        TMR1_InterruptHandler();
-    }
-}
-
-void TMR2_ISR(void)
-{
-    TMR2_INTERRUPT_CLEAR_FLAG();
-    if(TMR2_InterruptHandler)
-    {
-        TMR2_InterruptHandler();
-    }
- }
-
-void TMR3_ISR(void)
-{
-    TMR3_INTERRUPT_CLEAR_FLAG();
-    if(TMR3_InterruptHandler)
-    {
-        TMR3_InterruptHandler();
     }
 }
 

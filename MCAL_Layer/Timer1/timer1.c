@@ -10,6 +10,7 @@
 static inline void Timer1_Mode(const timer1_t *t_object);
 static inline void Register_Format_Select(const timer1_t *t_object);
 static inline void Timer1_EXT_OSC_Config(const timer1_t *t_object);
+static volatile void(*TMR1_InterruptHandler)(void) = NULL;
 
 static volatile uint16 preload_value = 0;
 
@@ -21,23 +22,35 @@ Std_ReturnType Timer1_Init(const timer1_t *t1_object){
     }
     else
     {
-      
-        
         TIMER1_DISABLE();
         TIMER1_PRESCALER_CONFIG(t1_object->prescaler);
-        Timer1_Mode(t1_object->mode);
-        Register_Format_Select(t1_object->format);
-        Timer1_EXT_OSC_Config(t1_object->ext_osc_config);
+        Timer1_Mode(t1_object);
         TMR1H = (t1_object->preload_value) >> 8;
         TMR1L = (uint8)(t1_object->preload_value);
         preload_value = t1_object->preload_value;
-#if TMR1_INTERRUPT_FEATURE == INTERRUPT_FEATURE_ENABLE 
-        interrupt_TMR1_t timer1_interrupt = {.TMR1_ExceptionHandler = t1_object->timer1_ExceptionHandler,
-                                             .periority = t1_object->priority,
-                                             .preload_value = t1_object->preload_value
-                                            };
         
-        Interrupt_TMR1_Enable(&timer1_interrupt);
+#if TMR1_INTERRUPT_FEATURE == INTERRUPT_FEATURE_ENABLE 
+        TMR1_INTERRUPT_ENABLE();
+        TMR1_INTERRUPT_CLEAR_FLAG();
+        TMR1_InterruptHandler = t1_object->timer1_ExceptionHandler;
+        
+#if INTERRUPT_FEATURE == INTERRUPT_PRIORITY_ENABLE
+        INTERRUPT_PRIORITY_ENABLE();
+        if(HIGH_PRIORITY == t1_object->priority)
+        {
+            GLOBAL_INTE_HIGH_ENABLE();  
+            TMR1_INTERRUPT_HIGH_PRIORITY();
+        }
+        else if(LOW_PRIORITY == t1_object->priority)
+        {
+            GLOBAL_INTE_LOW_ENABLE();
+            TMR1_INTERRUPT_LOW_PRIORITY();
+        }
+        else{/* Nothing */}
+#else
+        GLOBAL_INTERRUPT_ENABLE();
+        PERIPHERAL_INTERRUPT_ENABLE();
+#endif
 #endif
         TIMER1_ENABLE();
         ret_value = E_OK;
@@ -54,11 +67,7 @@ Std_ReturnType Timer1_Deinit(const timer1_t *t1_object){
     else
     {
 #if TMR1_INTERRUPT_FEATURE == INTERRUPT_FEATURE_ENABLE 
-        interrupt_TMR1_t timer1_interrupt = {.TMR1_ExceptionHandler= t1_object->timer1_ExceptionHandler,
-                                             .periority = t1_object->priority,
-                                             .preload_value = t1_object->preload_value
-                                            };
-        Interrupt_TMR1_Disable(&timer1_interrupt);
+        TMR1_INTERRUPT_DISABLE();
 #endif
         TIMER1_DISABLE();
         ret_value = E_OK;
@@ -116,17 +125,16 @@ static inline void Timer1_Mode(const timer1_t *t_object){
         }
         else
         {
-            TIMER1_TIMER_MODE_ENABLE();
+            /* Nothing */
         }
 }
 
 static inline void Register_Format_Select(const timer1_t *t_object){
-        if(TIMER1_8BIT_REG == t_object->format)
+        if(t_object->format == TIMER1_8BIT_REG)
         {
             TIMER1_REG_8BIT_FORMAT(); 
         }
-        
-        else if(TIMER1_16BIT_REG == t_object->format)
+        else if(t_object->format == TIMER1_16BIT_REG)
         {
             TIMER1_REG_16BIT_FORMAT(); 
         }
@@ -137,7 +145,18 @@ static inline void Register_Format_Select(const timer1_t *t_object){
 }
 
 static inline void Timer1_EXT_OSC_Config(const timer1_t *t_object){
-        if(TIMER1_EXT_OSC_ENABLE  == t_object->ext_osc_config)             {TIMER1_OSC_ENABLE(); }
-        else if(TIMER1_EXT_OSC_DISABLE  == t_object->ext_osc_config)       {TIMER1_OSC_DISABLE(); }
+        if(TIMER1_EXT_OSC_ENABLE==t_object->ext_osc_config)             {TIMER1_OSC_ENABLE(); }
+        else if(TIMER1_EXT_OSC_DISABLE==t_object->ext_osc_config)       {TIMER1_OSC_DISABLE(); }
         else{TIMER1_OSC_DISABLE(); }
+}
+
+void TMR1_ISR(void)
+{
+    TMR1_INTERRUPT_CLEAR_FLAG();
+    TMR1H = (preload_value ) >> 8;
+    TMR1L = (uint8)(preload_value) ;
+    if(TMR1_InterruptHandler)
+    {
+        TMR1_InterruptHandler();
+    }
 }

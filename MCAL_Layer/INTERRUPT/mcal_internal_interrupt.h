@@ -219,7 +219,6 @@ Std_ReturnType Interrupt_ADC_Disable(const interrupt_ADC_t *object);
 Std_ReturnType Interrupt_TMR0_Enable(const interrupt_TMR0_t *object);
 Std_ReturnType Interrupt_TMR0_Disable(const interrupt_TMR0_t *object);
 
-Std_ReturnType Interrupt_TMR1_Enable(const interrupt_TMR1_t *object);
 Std_ReturnType Interrupt_TMR1_Disable(const interrupt_TMR1_t *object);
 
 Std_ReturnType Interrupt_TMR2_Enable(const interrupt_TMR2_t *object);

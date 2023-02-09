@@ -11,7 +11,7 @@
 
 void __interrupt()InterruptManagerHigh(void){
     
-    if((INTERRUPT_ENABLE == PIE1bits.TMR1IE)&&(INTERRUPT_OCCUR == PIR1bits.TMR1IF ))
+    if((PIE1bits.TMR1IE == INTERRUPT_ENABLE)&&(PIR1bits.TMR1IF == INTERRUPT_OCCUR))
     {
         TMR1_ISR();
     }
@@ -25,23 +25,25 @@ void __interrupt(low_priority) InterruptManagerLow(void){
 
 #else
 void __interrupt()InterruptManager(void){
-    if((INTERRUPT_ENABLE == INTCONbits.INT0IE) && (INTERRUPT_OCCUR == INTCONbits.INT0IF))
+    
+     if((INTERRUPT_ENABLE == PIE1bits.TMR1IE ) && (INTERRUPT_OCCUR == PIR1bits.TMR1IF))
     {
-        INT0_ISR();
+        TMR1_ISR();
+    }
+    else{ /*Nohting*/ }
+     
+    if((INTERRUPT_ENABLE ==PIE1bits.TMR2IE ) && (INTERRUPT_OCCUR ==PIR1bits.TMR2IF))
+    {
+        TMR2_ISR();
     }
     else{ /*Nohting*/ }
     
-    if((INTERRUPT_ENABLE == INTCON3bits.INT1IE)&&(INTERRUPT_OCCUR == INTCON3bits.INT1IF))
+    if((INTERRUPT_ENABLE ==PIE2bits.TMR3IE ) && (INTERRUPT_OCCUR ==PIR2bits.TMR3IF))
     {
-        INT1_ISR();
+        TMR3_ISR();
     }
-    else{ /* Nothing */}
+    else{ /*Nohting*/ }
     
-    if((INTERRUPT_ENABLE == INTCON3bits.INT2IE)&&(INTERRUPT_OCCUR == INTCON3bits.INT2IF))
-    {
-        INT2_ISR();
-    }
-    else{ /* Nothing */}
 }
 
 

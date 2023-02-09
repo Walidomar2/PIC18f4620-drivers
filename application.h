@@ -14,6 +14,8 @@
 #include "MCAL_Layer/ADC/ADC.h"
 #include "MCAL_Layer/Timer0/timer0.h"
 #include "MCAL_Layer/Timer1/timer1.h"
+#include "MCAL_Layer/Timer2/timer2.h"
+#include "MCAL_Layer/Timer3/timer3.h"
 
 #endif	/* APPLICATION_H */
 

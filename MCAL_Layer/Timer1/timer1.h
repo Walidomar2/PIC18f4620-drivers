@@ -11,6 +11,7 @@
 /* Includes Section */
 #include "../../MCAL_Layer/GPIO_Module/hal_gpio.h"
 #include "../../MCAL_Layer/INTERRUPT/mcal_internal_interrupt.h"
+#include "../../MCAL_Layer/INTERRUPT/mcal_interrupt_manager.h"
 
 /* Macros Declarations */
 #define FEATURE_ENABLE      1U
