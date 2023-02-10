@@ -16,7 +16,7 @@ void Timer1_ISR(void)
 timer1_t timer1_obj={
     .timer1_ExceptionHandler = Timer1_ISR,
     .mode = TIMER1_TIMER_MODE,
-    .preload_value = 300,
+    .preload_value = 3000,
     .prescaler = TIMER1_PRESCALER_DIV_BY_8 ,
     .format = TIMER1_16BIT_REG
 };

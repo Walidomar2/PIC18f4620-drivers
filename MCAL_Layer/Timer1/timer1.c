@@ -10,9 +10,9 @@
 static inline void Timer1_Mode(const timer1_t *t_object);
 static inline void Register_Format_Select(const timer1_t *t_object);
 static inline void Timer1_EXT_OSC_Config(const timer1_t *t_object);
-static volatile void(*TMR1_InterruptHandler)(void) = NULL;
+static void(*TMR1_InterruptHandler)(void) = NULL;
 
-static volatile uint16 preload_value = 0;
+uint16 preload_value = 0;
 
 Std_ReturnType Timer1_Init(const timer1_t *t1_object){
     Std_ReturnType ret_value = E_NOT_OK;
@@ -30,6 +30,7 @@ Std_ReturnType Timer1_Init(const timer1_t *t1_object){
         preload_value = t1_object->preload_value;
         
 #if TMR1_INTERRUPT_FEATURE == INTERRUPT_FEATURE_ENABLE 
+        
         TMR1_INTERRUPT_ENABLE();
         TMR1_INTERRUPT_CLEAR_FLAG();
         TMR1_InterruptHandler = t1_object->timer1_ExceptionHandler;
